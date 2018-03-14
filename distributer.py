@@ -20,7 +20,7 @@ def scan(url,cmsjobs):
         for u in cms["urls"]:
             currentu=url+'/'+u["addr"]
             try:
-                response=urllib2.urlopen(currentu).read()
+                response=urllib2.urlopen(currentu,timeout=10).read()
                 m=hashlib.md5()
                 m.update(response)
                 if m.hexdigest()==u["md5"]:
