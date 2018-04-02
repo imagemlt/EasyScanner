@@ -29,6 +29,14 @@ def scan(url,cmsjobs):
                     currentMark["credential"]+=u["existMark"]
             except urllib2.URLError, e:
                 continue
+        for c in cms["content"]:
+            currentu = url + '/' + c["addr"]
+            try:
+                response = urllib2.urlopen(currentu, timeout=10).read()
+                if c["data"] in response:
+                    currentMark["credential"] += c["Mark"]*3
+            except urllib2.URLError, e:
+                continue
         res.append(currentMark)
     res.sort(key=lambda x:int(x["credential"]),reverse=True)
     return res[0]

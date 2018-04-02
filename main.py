@@ -37,7 +37,10 @@ def main():
                 applist.remove(x)
                 print "[+]finished a task"
     result.sort(key=lambda x:int(x["credential"]),reverse=True)
-    print "the url you scanned is most probably "+result[0]["type"]
+    print "[+]the url you scanned is most probably "+result[0]["type"].decode('unicode-escape')
+    print "\t[+]top five probably answers:"
+    for m in result[:5]:
+        print "\t\t[+]"+m["type"].decode('unicode-escape')+",credential:"+str(m["credential"])
 
 if __name__=="__main__":
     main()
