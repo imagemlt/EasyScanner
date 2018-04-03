@@ -1,4 +1,4 @@
-cmstypes = [{"content": [], "name": "Jingyi", "urls": [
+[{"content": [], "name": "Jingyi", "urls": [
     {"fullMark": 100, "existMark": 0, "addr": "/favicon.ico", "md5": "32b016195f800b8d3e8d93fbd24583b4"}],
              "scripts": []}, {"content": [], "name": "phpmps", "urls": [
     {"fullMark": 100, "existMark": 30, "addr": "/admin/images/arrow_up.gif",
