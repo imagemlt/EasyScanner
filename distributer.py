@@ -10,13 +10,14 @@ import hashlib
 from fingerprints import *
 import random
 import json
+import time
 
 agents=json.loads(open('user_agent.json').read())
 
 distributer=Celery('distributer',broker=conf_redis_backend,backend=conf_redis_backend)
 
 @distributer.task
-def scan(url,cmsjobs,user_agent="random",timeout=10,proxy_settings=None):
+def scan(url,cmsjobs,user_agent="random",timeout=10,proxy_settings=None,interval=None):
     "TODO"
     global agents
     if(proxy_settings is not None):
@@ -27,6 +28,8 @@ def scan(url,cmsjobs,user_agent="random",timeout=10,proxy_settings=None):
     for cms in cmsjobs:
         currentMark={"type":cms["name"],"credential":0}
         for u in cms["urls"]:
+            if interval is not None:
+                time.sleep(interval)
             currentu=url+'/'+u["addr"]
             try:
                 req=urllib2.Request(currentu)
@@ -42,7 +45,8 @@ def scan(url,cmsjobs,user_agent="random",timeout=10,proxy_settings=None):
                     currentMark["credential"]+=u["fullMark"]
                 else:
                     currentMark["credential"]+=u["existMark"]
-            except:
+            except Exception,e:
+                print e.message
                 continue
         for c in cms["content"]:
             currentu = url + '/' + c["addr"]
