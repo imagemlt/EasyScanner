@@ -3,6 +3,7 @@
 
 from optparse import OptionParser
 from distributer import scan
+from celery.task.control import revoke
 from fingerprints import *
 from bs4 import BeautifulSoup
 import time
@@ -32,10 +33,15 @@ def main():
     if(not options.url):
         instructParser.print_help()
         return
-    frontreqeust=requests.get(options.url)
+    print "[+]fetching cotent"
+    try:
+        frontreqeust=requests.get(options.url,timeout=10)
+    except Exception,e:
+        print "[-]error accessing your url",e
+        return 0
     headers=frontreqeust.headers
     content=frontreqeust.content
-    anlyse=BeautifulSoup(content)
+    anlyse=BeautifulSoup(content,"lxml")
     print "[+]the url you want to scan:"+options.url
     proxylist=[]
     if(options.proxy):
@@ -54,14 +60,27 @@ def main():
     result=[]
     while len(applist):
         for x in applist:
-            if(x.ready()):
-                result.append(x.get())
-                applist.remove(x)
-                print "[+]finished a task"
+            try:
+                if(x.ready()):
+                    result.append(x.get())
+                    applist.remove(x)
+                    print "[+]finished a task"
+            except KeyboardInterrupt:
+                print "[-]user exited"
+                for x in applist:
+                    revoke(x.id,Terminate=True)
+                print "[-]all tasks revoked"
+                return 0
+            except Exception,e:
+                print "an error accured:"+e.message
+                continue
     result.sort(key=lambda x:int(x["credential"]),reverse=True)
-    print "[+]request headers:"
-    print headers
-    print "[+]URL title:"+anlyse.title.text
+    try:
+        print "[+]request headers:"
+        print headers
+        print "[+]URL title:"+anlyse.title.text
+    except Exception,e:
+        print "[-]print basic info err:",e
     print "[+]the url you scanned is most probably "+result[0]["type"].decode('unicode-escape')
     print "\t[+]top five probably answers:"
     for m in result[:5]:
