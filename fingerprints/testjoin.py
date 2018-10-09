@@ -6,14 +6,28 @@
 # Blog:http://blog.imagemlt.xyz
 # Created Time: 2018年10月07日 星期日 21时57分58秒
 import json
+from __init__ import cmstypes
 
-f=json.loads(open('fingerprints.json').read())
 
 
 res={}
 
-for per in f:
+diguo={}
+
+for per in cmstypes:
     key=per['name'].strip().lower()
+    if 'diguocms' in key:
+        diguo=per
+        break
+for per in cmstypes:
+    key=per['name'].strip().lower()
+    if 'diguocms' in key:
+        continue
+    if 'empirecms' in key:
+        res[key]=per
+        res[key]['content']+=diguo['content']
+        res[key]['urls']+=diguo['urls']
+        continue
     if not res.has_key(key):
         res[key]={'name':key,'content':[],'urls':[],'scripts':[]}
     res[key]['content']+=per['content']

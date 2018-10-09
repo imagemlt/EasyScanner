@@ -33,12 +33,14 @@ def scan(url,cmsjobs,user_agent="random",timeout=10,proxy_settings=None,interval
     jobs=0
     for cms in cmsjobs:
         currentMark={"type":cms["name"],"credential":0}
+        visited_url=[]
         for u in cms["urls"]:
             if interval is not None:
                 time.sleep(interval)
             currentu=url+'/'+u["addr"]
             try:
                 req=urllib2.Request(currentu)
+
                 if user_agent!="random":
                     req.add_header('User-Agent',user_agent)
                 else:
@@ -49,8 +51,9 @@ def scan(url,cmsjobs,user_agent="random",timeout=10,proxy_settings=None,interval
                 m.update(response)
                 if m.hexdigest()==u["md5"].lower():
                     currentMark["credential"]+=u["fullMark"]
-                else:
+                elif u['addr'] not in visited_url:
                     currentMark["credential"]+=u["existMark"]
+                    visited_url.append(u["addr"])
             except socket.error,sockerr:
                 print sockerr
                 continue
