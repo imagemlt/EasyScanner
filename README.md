@@ -1,5 +1,5 @@
-# EasyScannera
-
+# EasyScanner
+distributed cms recognizer
 
 ### todolist 
 
